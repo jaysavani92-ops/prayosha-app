@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Prayosha Construction App</title>
     
-    <!-- PWA MANIFEST AND THEME COLORS -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FBB03B">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,10 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Prayosha">
     <link rel="apple-touch-icon" href="assets/logo.jpg">
 
-    <!-- FontAwesome for modern UI Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Link to Modular CSS Files -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/login.css">
 </head>
@@ -28,14 +24,11 @@
     <div id="loginView">
         <div class="login-overlay"></div>
         <div class="login-content">
-            
             <div class="login-branding">
                 <img src="assets/logo.jpg" alt="Prayosha Logo" class="company-logo">
             </div>
-
             <h1 class="login-headline">Building A Better<br>Tomorrow</h1>
             <p class="login-subheadline">Your all-in-one solution for smarter construction management.</p>
-            
             <div class="login-input-area">
                 <input type="password" id="pinInput" maxlength="4" placeholder="••••" inputmode="numeric">
                 <button id="loginBtn" class="login-btn" onclick="attemptLogin()">
@@ -44,7 +37,6 @@
                 <div id="statusMessage" class="message"></div>
                 <div class="forgot-pin">Forgot PIN? Contact Administrator</div>
             </div>
-
         </div>
     </div>
 
@@ -52,19 +44,19 @@
     <!-- VIEW 2: DASHBOARD COMMAND CENTER          -->
     <!-- ========================================= -->
     <div id="dashboardView">
-        <!-- Sidebar (Desktop & Tablet) -->
+        <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">PRAYO<span>SHA</span></div>
             <ul class="nav-links" id="sidebarNav">
-                <li class="active"><i class="fas fa-home"></i><span class="nav-text">Dashboard</span></li>
-                <li><i class="fas fa-building"></i><span class="nav-text">Projects</span></li>
-                <li><i class="fas fa-tasks"></i><span class="nav-text">Tasks</span></li>
-                <li><i class="fas fa-boxes"></i><span class="nav-text">Inventory</span></li>
-                <li><i class="fas fa-users"></i><span class="nav-text">Workforce</span></li>
-                <li><i class="fas fa-file-invoice-dollar"></i><span class="nav-text">Accounts</span></li>
-                <li><i class="fas fa-shopping-cart"></i><span class="nav-text">Purchases</span></li>
-                <li><i class="fas fa-handshake"></i><span class="nav-text">Vendors</span></li>
-                <li><i class="fas fa-comments"></i><span class="nav-text">Social</span></li>
+                <li id="nav-dashboard" class="active" onclick="switchView('view-dashboard', this)"><i class="fas fa-home"></i><span class="nav-text">Dashboard</span></li>
+                <li id="nav-projects" onclick="switchView('view-projects', this)"><i class="fas fa-building"></i><span class="nav-text">Projects</span></li>
+                <li id="nav-tasks" onclick="switchView('view-tasks', this)"><i class="fas fa-tasks"></i><span class="nav-text">Tasks</span></li>
+                <li id="nav-inventory"><i class="fas fa-boxes"></i><span class="nav-text">Inventory</span></li>
+                <li id="nav-workforce"><i class="fas fa-users"></i><span class="nav-text">Workforce</span></li>
+                <li id="nav-accounts"><i class="fas fa-file-invoice-dollar"></i><span class="nav-text">Accounts</span></li>
+                <li id="nav-purchases"><i class="fas fa-shopping-cart"></i><span class="nav-text">Purchases</span></li>
+                <li id="nav-vendors"><i class="fas fa-handshake"></i><span class="nav-text">Vendors</span></li>
+                <li id="nav-social"><i class="fas fa-comments"></i><span class="nav-text">Social</span></li>
             </ul>
         </div>
 
@@ -73,9 +65,8 @@
             <div class="top-header">
                 <div class="header-left">
                     <select class="project-select" id="globalProject">
-                        <option value="PRJ-01">Skyline Residency</option>
-                        <option value="PRJ-02">Greenwood Villas</option>
-                        <option value="PRJ-03">Shivalik Heights</option>
+                        <option value="PRJ-00">All Projects Overview</option>
+                        <!-- Will be populated dynamically later -->
                     </select>
                     <div class="sync-badge online" id="networkStatus">
                         <i class="fas fa-wifi"></i> Online
@@ -104,43 +95,62 @@
                 </div>
             </div>
 
+            <!-- DYNAMIC WORKSPACE -->
             <div class="content-area" id="mainWorkspace">
-                <div class="dashboard-card">
-                    <h2>Command Center Online</h2>
-                    <p>PWA capabilities activated! This application is now installed locally on your device and will load instantly.</p>
+                
+                <!-- DASHBOARD HOME VIEW -->
+                <div id="view-dashboard" class="module-view">
+                    <div class="dashboard-card">
+                        <h2>Director's Overview</h2>
+                        <p>Welcome back. Select a module from the left menu to manage operations.</p>
+                    </div>
                 </div>
+
+                <!-- PROJECTS MODULE VIEW -->
+                <div id="view-projects" class="module-view" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>Active Projects Portfolio</h2>
+                        <button class="login-btn" style="width: auto; padding: 10px 20px; font-size: 14px;" onclick="loadProjectsData()"><i class="fas fa-sync-alt"></i> Sync Data</button>
+                    </div>
+                    
+                    <!-- Projects will be rendered inside this grid -->
+                    <div id="projectsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                        <!-- Placeholder -->
+                        <div class="dashboard-card" style="text-align: center; color: #888;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                            <p>Loading projects from database...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TASKS MODULE VIEW (Placeholder) -->
+                <div id="view-tasks" class="module-view" style="display: none;">
+                    <div class="dashboard-card">
+                        <h2>Task Management</h2>
+                        <p>Task module under construction.</p>
+                    </div>
+                </div>
+
             </div>
         </div>
 
         <!-- Bottom Navigation (Mobile Only) -->
         <div class="bottom-nav">
-            <div class="bottom-nav-item active"><i class="fas fa-home"></i>Home</div>
-            <div class="bottom-nav-item"><i class="fas fa-tasks"></i>Tasks</div>
+            <div class="bottom-nav-item active" onclick="switchView('view-dashboard', this)"><i class="fas fa-home"></i>Home</div>
+            <div class="bottom-nav-item" onclick="switchView('view-projects', this)"><i class="fas fa-building"></i>Projects</div>
             <div class="bottom-nav-item"><i class="fas fa-camera"></i>Updates</div>
             <div class="bottom-nav-item"><i class="fas fa-boxes"></i>Stock</div>
             <div class="bottom-nav-item"><i class="fas fa-bars"></i>More</div>
         </div>
     </div>
 
-    <!-- ========================================= -->
-    <!-- LINK TO MODULAR JAVASCRIPT FILES          -->
-    <!-- ========================================= -->
+    <!-- SCRIPTS -->
     <script src="js/auth.js"></script>
     <script src="js/Director_Dashboard.js"></script>
-
-    <!-- ========================================= -->
-    <!-- SERVICE WORKER REGISTRATION (PWA)         -->
-    <!-- ========================================= -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then((registration) => {
-                        console.log('PWA ServiceWorker registered with scope:', registration.scope);
-                    })
-                    .catch((error) => {
-                        console.error('ServiceWorker registration failed:', error);
-                    });
+                navigator.serviceWorker.register('./sw.js').catch(error => console.error(error));
             });
         }
     </script>
