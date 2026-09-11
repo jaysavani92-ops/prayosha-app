@@ -1,0 +1,18 @@
+{
+  "name": "Prayosha Construction Command Center",
+  "short_name": "Prayosha",
+  "description": "Enterprise construction management and financial tracking.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121212",
+  "theme_color": "#FBB03B",
+  "icons": [
+    {
+      "src": "assets/logo.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
