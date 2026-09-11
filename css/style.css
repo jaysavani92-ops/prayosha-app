@@ -7,12 +7,15 @@
     --text-dark: #333333;
 }
 
+/* Added overflow-x: hidden to prevent horizontal scrolling on mobile */
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 100vh;
     overflow: hidden;
     background-color: var(--bg-color);
+    width: 100vw;
+    overflow-x: hidden;
 }
 
 #dashboardView {
@@ -39,9 +42,10 @@ body {
 .nav-links li i { font-size: 18px; min-width: 30px; text-align: center; color: var(--primary-color); }
 .nav-text { margin-left: 15px; }
 
-.main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+.main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; overflow-x: hidden; }
 .content-area { padding: 20px; flex-grow: 1; }
 .dashboard-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+.module-view { display: none; } /* Used for SPA routing */
 
 /* TOP NAV STYLES */
 .top-header { background-color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; }
@@ -72,12 +76,41 @@ body {
 .bottom-nav-item.active { color: var(--primary-color); font-weight: bold; }
 .bottom-nav-item.active i { color: var(--primary-color); }
 
-/* RESPONSIVE MEDIA QUERIES */
+/* =========================================
+   RESPONSIVE MEDIA QUERIES
+   ========================================= */
 @media (min-width: 1025px) { .sidebar { width: 260px; } .nav-text { display: inline-block; } }
 @media (min-width: 768px) and (max-width: 1024px) {
     .sidebar { width: 70px; } .sidebar-header { padding: 20px 0; font-size: 14px; } .sidebar-header span { display: none; }
     .nav-text { display: none; } .nav-links li { justify-content: center; padding: 15px 0; } .nav-links li i { margin: 0; }
 }
 @media (max-width: 767px) {
-    .sidebar { display: none; } .bottom-nav { display: flex; } .main-content { padding-bottom: 60px; }
+    .sidebar { display: none; } 
+    .bottom-nav { display: flex; } 
+    .main-content { padding-bottom: 80px; }
+    
+    /* MOBILE HEADER FIXES */
+    .top-header { padding: 10px; }
+    .header-left, .header-right { gap: 8px; }
+    
+    /* Shrink the project dropdown */
+    .project-select {
+        font-size: 13px;
+        padding: 6px;
+        max-width: 130px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    
+    /* Hide the text 'Online', show only the wifi icon */
+    .sync-badge { padding: 6px; font-size: 0; }
+    .sync-badge i { font-size: 12px; margin: 0; }
+    
+    /* Shrink Avatar and Icons */
+    .icon-btn { font-size: 16px; }
+    .avatar-circle { width: 32px; height: 32px; font-size: 12px; }
+    
+    /* Grid layout fix for mobile */
+    #projectsGrid { grid-template-columns: 1fr !important; }
 }
