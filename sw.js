@@ -3,7 +3,8 @@
 // Handles offline caching and resource routing
 // ==========================================
 
-const CACHE_NAME = 'prayosha-app-cache-v1';
+// BUMPED TO v2: This forces mobile devices to clear the old cache and download the new UI fixes
+const CACHE_NAME = 'prayosha-app-cache-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -52,17 +53,13 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
             .then((cachedResponse) => {
-                // Return cached version if found
                 if (cachedResponse) {
                     return cachedResponse;
                 }
-                // Otherwise fetch from the network
                 return fetch(event.request).then((networkResponse) => {
-                    // Ignore caching third-party API data, only cache local app files
                     if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
                         return networkResponse;
                     }
-                    // Clone the response and save it to the cache for next time
                     const responseToCache = networkResponse.clone();
                     caches.open(CACHE_NAME)
                         .then((cache) => {
