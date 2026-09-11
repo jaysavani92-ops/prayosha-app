@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prayosha Employee App</title>
+    
+    <!-- PWA MANIFEST AND THEME COLORS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FBB03B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Prayosha Field">
+    <link rel="apple-touch-icon" href="assets/logo.jpg">
+
+    <!-- FontAwesome for modern UI Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Link to STRICTLY EMPLOYEE CSS Files -->
+    <link rel="stylesheet" href="css/emp_style.css">
+    <link rel="stylesheet" href="css/emp_login.css">
+</head>
+<body>
+
+    <!-- ========================================= -->
+    <!-- VIEW 1: FIELD EMPLOYEE LOGIN SCREEN       -->
+    <!-- ========================================= -->
+    <div id="loginView">
+        <div class="login-overlay"></div>
+        <div class="login-content">
+            
+            <div class="login-branding">
+                <img src="assets/logo.jpg" alt="Prayosha Logo" class="company-logo">
+            </div>
+
+            <!-- Tailored text for the field application -->
+            <h1 class="login-headline">Field Operations<br>Portal</h1>
+            <p class="login-subheadline">Secure login for Prayosha site management and workforce.</p>
+            
+            <div class="login-input-area">
+                <input type="password" id="pinInput" maxlength="4" placeholder="••••" inputmode="numeric">
+                <button id="loginBtn" class="login-btn" onclick="attemptLogin()">
+                    Login <i class="fas fa-hard-hat" style="margin-left: 8px;"></i>
+                </button>
+                <div id="statusMessage" class="message"></div>
+                <div class="forgot-pin">Forgot PIN? Contact Site Admin</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- VIEW 2: EMPLOYEE DASHBOARD (Shell Only)   -->
+    <!-- ========================================= -->
+    <div id="dashboardView">
+        
+        <!-- Mobile-First Main Content Area -->
+        <div class="main-content">
+            <div class="top-header">
+                <div class="header-left">
+                    <div style="font-weight: bold; color: #333; font-size: 18px;">Prayosha Field App</div>
+                </div>
+
+                <div class="header-right">
+                    <div class="icon-btn" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    
+                    <div class="profile-container">
+                        <div class="avatar-circle" id="userAvatar" onclick="toggleProfileMenu()">--</div>
+                        <div class="profile-dropdown" id="profileMenu">
+                            <div class="dropdown-header-info">
+                                <strong id="displayFullName">Loading...</strong>
+                                <small id="displayRole">Role</small>
+                            </div>
+                            <a class="dropdown-item logout" onclick="performLogout()"><i class="fas fa-sign-out-alt"></i> Secure Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- We will build specific field modules inside this workspace -->
+            <div class="content-area" id="mainWorkspace">
+                <div class="dashboard-card" style="text-align: center; margin-top: 50px;">
+                    <i class="fas fa-tools" style="font-size: 40px; color: #FBB03B; margin-bottom: 15px;"></i>
+                    <h2>Welcome to the Field App</h2>
+                    <p>Employee dashboard architecture is ready for development.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation (Mobile Only) -->
+        <div class="bottom-nav">
+            <div class="bottom-nav-item active"><i class="fas fa-home"></i>Home</div>
+            <!-- Modules will be added here based on your instructions -->
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- STRICTLY EMPLOYEE JAVASCRIPT FILES        -->
+    <!-- ========================================= -->
+    <script src="js/emp_auth.js"></script>
+    <script src="js/emp_dashboard.js"></script>
+
+</body>
+</html>
