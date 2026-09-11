@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Prayosha Construction App</title>
     
+    <!-- PWA MANIFEST AND THEME COLORS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FBB03B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Prayosha">
+    <link rel="apple-touch-icon" href="assets/logo.jpg">
+
     <!-- FontAwesome for modern UI Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -21,7 +29,6 @@
         <div class="login-overlay"></div>
         <div class="login-content">
             
-            <!-- Real Logo from Assets Folder -->
             <div class="login-branding">
                 <img src="assets/logo.jpg" alt="Prayosha Logo" class="company-logo">
             </div>
@@ -100,7 +107,7 @@
             <div class="content-area" id="mainWorkspace">
                 <div class="dashboard-card">
                     <h2>Command Center Online</h2>
-                    <p>Welcome to the Director's Command Center. Login CSS is now isolated!</p>
+                    <p>PWA capabilities activated! This application is now installed locally on your device and will load instantly.</p>
                 </div>
             </div>
         </div>
@@ -121,5 +128,21 @@
     <script src="js/auth.js"></script>
     <script src="js/Director_Dashboard.js"></script>
 
+    <!-- ========================================= -->
+    <!-- SERVICE WORKER REGISTRATION (PWA)         -->
+    <!-- ========================================= -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((registration) => {
+                        console.log('PWA ServiceWorker registered with scope:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
