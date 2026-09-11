@@ -1,0 +1,93 @@
+/* =========================================
+   EMPLOYEE LOGIN SCREEN STYLES (emp_login.css)
+   Isolated file for Employee Login UI only.
+   ========================================= */
+
+#loginView {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    /* Uses the exact same background image from the assets folder */
+    background-image: url('../assets/background.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to bottom, rgba(18, 18, 18, 0.6) 0%, rgba(18, 18, 18, 0.95) 100%);
+    z-index: 1;
+}
+
+.login-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 450px;
+    padding: 40px;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-branding { margin-bottom: 30px; }
+.company-logo {
+    max-width: 250px;
+    height: auto;
+    margin-bottom: 10px;
+    border-radius: 8px; 
+}
+
+.login-headline {
+    font-size: 38px; font-weight: 800; line-height: 1.2;
+    margin: 0 0 15px 0; text-align: left;
+}
+
+.login-subheadline {
+    font-size: 16px; color: #cccccc; margin: 0 0 40px 0;
+    line-height: 1.5; text-align: left;
+}
+
+.login-input-area { display: flex; flex-direction: column; gap: 15px; }
+
+input[type="password"] {
+    width: 100%; padding: 18px; 
+    border: 1px solid rgba(255,255,255,0.2); 
+    border-radius: 30px; 
+    background-color: rgba(255, 255, 255, 0.1); 
+    color: white; font-size: 24px; text-align: center; 
+    letter-spacing: 12px; box-sizing: border-box;
+    backdrop-filter: blur(10px);
+}
+
+input[type="password"]:focus {
+    outline: none; border-color: #FBB03B; background-color: rgba(255, 255, 255, 0.15); 
+}
+input[type="password"]::placeholder { color: rgba(255,255,255,0.5); }
+
+.login-btn {
+    width: 100%; padding: 18px; background-color: #FBB03B; 
+    color: #000; border: none; border-radius: 30px; 
+    font-size: 18px; font-weight: bold; cursor: pointer; 
+    transition: background-color 0.3s; display: flex; 
+    justify-content: center; align-items: center;
+}
+
+.login-btn:hover { background-color: #e59c2a; }
+.login-btn:disabled { background-color: #555; cursor: not-allowed; }
+
+.message { text-align: center; font-size: 14px; min-height: 20px; }
+.error { color: #ff4d4d; }
+.success { color: #4CAF50; }
+
+.forgot-pin {
+    text-align: center; font-size: 13px; color: #999;
+    margin-top: 15px; cursor: pointer;
+}
+.forgot-pin:hover { color: #FBB03B; }
