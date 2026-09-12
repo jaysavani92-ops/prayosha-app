@@ -2,12 +2,24 @@
 // EMPLOYEE DASHBOARD & PRAYOSHA SITE MGT LOGIC
 // ==========================================
 
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEnXpxacfhZvdW7cbOmR3Mu90moQQ0bOdyGBsDlUU1mRml737nK57tqog2mzg7Bs5wbw/exec"; // IMPORTANT: Update this!
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEnXpxacfhZvdW7cbOmR3Mu90moQQ0bOdyGBsDlUU1mRml737nK57tqog2mzg7Bs5wbw/exec";
 
 const MODULE_CONFIG = {
     'SiteMgt': { name: 'Site Mgt', icon: 'fa-hard-hat', title: 'Site Management' },
     'ExtAgencies': { name: 'Agencies', icon: 'fa-handshake', title: 'External Agencies' },
-    'InvLog': { name: 'Inventory', icon: 'fa-boxes', title: 'Inventory & Logistics' }
+    'InvLog': { name: 'Inventory', icon: 'fa-boxes', title: 'Inventory & Logistics' },
+    'SafetyQC': { name: 'Safety & QC', icon: 'fa-shield-alt', title: 'Safety & Quality Control' },
+    'Sales': { name: 'Sales', icon: 'fa-chart-line', title: 'Sales Management' },
+    'HR': { name: 'HR', icon: 'fa-users-cog', title: 'Human Resources' },
+    'Social': { name: 'Social', icon: 'fa-comments', title: 'Internal Communications' },
+    'PettyCash': { name: 'Petty Cash', icon: 'fa-wallet', title: 'Petty Cash Management' },
+    'Reports': { name: 'Reports', icon: 'fa-chart-pie', title: 'Report Generation' },
+    'PreDev': { name: 'Pre-Dev', icon: 'fa-file-signature', title: 'Pre-Development' },
+    'Calc': { name: 'Calculators', icon: 'fa-calculator', title: 'Construction Calculators' },
+    'DigitalTwin': { name: 'Digital Twin', icon: 'fa-cubes', title: 'Digital Twin 3D' },
+    'Compliance': { name: 'Compliance', icon: 'fa-file-contract', title: 'Compliance & RERA' },
+    'AssetMaint': { name: 'Assets', icon: 'fa-tools', title: 'Asset Maintenance' },
+    'Accounts': { name: 'Accounts', icon: 'fa-file-invoice-dollar', title: 'Accounts & Expenses' }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -44,8 +56,13 @@ function activateDashboard(user) {
 
 function buildBottomNavOnly(accessString) {
     const navContainer = document.getElementById('dynamicBottomNav');
+    
+    // Clear old screens to prevent duplication
+    document.querySelectorAll('.dynamic-screen').forEach(screen => screen.remove());
+
     navContainer.innerHTML = `<div class="bottom-nav-item active" id="nav-home" onclick="switchView('view-home', 'nav-home')"><i class="fas fa-home"></i>Home</div>`;
 
+    const workspace = document.getElementById('mainWorkspace');
     let authorizedTags = accessString.trim().toLowerCase() === 'all' ? Object.keys(MODULE_CONFIG) : accessString.split(',').map(tag => tag.trim());
 
     authorizedTags.forEach(tag => {
@@ -57,6 +74,20 @@ function buildBottomNavOnly(accessString) {
             navBtn.onclick = () => switchView(`view-${tag}`, `nav-${tag}`);
             navBtn.innerHTML = `<i class="fas ${moduleData.icon}"></i>${moduleData.name}`;
             navContainer.appendChild(navBtn);
+
+            // Add placeholder module screen ONLY if it doesn't already exist in our HTML (like view-SiteMgt)
+            if (!document.getElementById(`view-${tag}`)) {
+                const screenDiv = document.createElement('div');
+                screenDiv.id = `view-${tag}`;
+                screenDiv.className = 'module-view dynamic-screen';
+                screenDiv.innerHTML = `
+                    <div class="dashboard-card" style="border-top: 4px solid var(--primary-color);">
+                        <h2 style="margin-top: 0; color: #333;">${moduleData.title}</h2>
+                        <p style="color: #666;">Ready for module implementation.</p>
+                    </div>
+                `;
+                workspace.appendChild(screenDiv);
+            }
         }
     });
 }
@@ -80,6 +111,14 @@ function switchView(viewId, navId) {
 }
 
 function toggleProfileMenu() { document.getElementById('profileMenu').classList.toggle('show'); }
+
+window.onclick = function(event) {
+    if (!event.target.matches('.avatar-circle')) {
+        const menu = document.getElementById('profileMenu');
+        if (menu && menu.classList.contains('show')) menu.classList.remove('show');
+    }
+}
+
 function performLogout() {
     localStorage.removeItem('prayosha_employee_user');
     location.reload();
