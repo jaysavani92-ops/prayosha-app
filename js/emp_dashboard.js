@@ -1,11 +1,11 @@
 // ==========================================
 // EMPLOYEE DASHBOARD LOGIC (emp_dashboard.js)
-// Handles Dynamic UI generation based on App_Access tags
+// Handles Dynamic UI & Bottom Navigation routing
 // ==========================================
 
 // MASTER MODULE DICTIONARY
 const MODULE_CONFIG = {
-    'SiteMgt': { name: 'Site Management', icon: 'fa-hard-hat' },
+    'SiteMgt': { name: 'Site Mgt', icon: 'fa-hard-hat' },
     'ExtAgencies': { name: 'Agencies', icon: 'fa-handshake' },
     'InvLog': { name: 'Inventory', icon: 'fa-boxes' },
     'SafetyQC': { name: 'Safety & QC', icon: 'fa-shield-alt' },
@@ -14,11 +14,11 @@ const MODULE_CONFIG = {
     'Social': { name: 'Social', icon: 'fa-comments' },
     'PettyCash': { name: 'Petty Cash', icon: 'fa-wallet' },
     'Reports': { name: 'Reports', icon: 'fa-chart-pie' },
-    'PreDev': { name: 'Pre-Development', icon: 'fa-file-signature' },
+    'PreDev': { name: 'Pre-Dev', icon: 'fa-file-signature' },
     'Calc': { name: 'Calculators', icon: 'fa-calculator' },
-    'DigitalTwin': { name: 'Digital Twin', icon: 'fa-cubes' },
+    'DigitalTwin': { name: '3D Twin', icon: 'fa-cubes' },
     'Compliance': { name: 'Compliance', icon: 'fa-file-contract' },
-    'AssetMaint': { name: 'Asset Maint.', icon: 'fa-tools' },
+    'AssetMaint': { name: 'Assets', icon: 'fa-tools' },
     'Accounts': { name: 'Accounts', icon: 'fa-file-invoice-dollar' }
 };
 
@@ -31,11 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function activateDashboard(user) {
-    // 1. Hide Login, Show Dashboard
     document.getElementById('loginView').style.display = 'none';
     document.getElementById('dashboardView').style.display = 'flex';
 
-    // 2. Set Header Data
     document.getElementById('displayFullName').innerText = user.name;
     document.getElementById('displayRole').innerText = user.role;
     
@@ -46,15 +44,24 @@ function activateDashboard(user) {
     }
     document.getElementById('userAvatar').innerText = initials;
 
-    // 3. GENERATE DYNAMIC MODULE GRID
+    // Trigger the dual UI generation (Grid + Nav Bar)
     buildAuthorizedUI(user.access);
 }
 
 function buildAuthorizedUI(accessString) {
     const gridContainer = document.getElementById('dynamicModuleGrid');
-    gridContainer.innerHTML = ''; // Clear previous data
+    const navContainer = document.getElementById('dynamicBottomNav');
+    const workspace = document.getElementById('mainWorkspace');
+    
+    gridContainer.innerHTML = ''; 
 
-    // Handle the Director's "All" override
+    // Always start the Bottom Nav with the "Home" button
+    let navHTML = `
+        <div class="bottom-nav-item active" id="nav-home" onclick="switchView('view-home', 'nav-home')">
+            <i class="fas fa-home"></i>Home
+        </div>
+    `;
+
     let authorizedTags = [];
     if (accessString.trim().toLowerCase() === 'all') {
         authorizedTags = Object.keys(MODULE_CONFIG);
@@ -62,31 +69,66 @@ function buildAuthorizedUI(accessString) {
         authorizedTags = accessString.split(',').map(tag => tag.trim());
     }
 
-    // Build buttons for each authorized tag
     authorizedTags.forEach(tag => {
         const moduleData = MODULE_CONFIG[tag];
-        
-        // If the tag exists in our master dictionary, render it
         if (moduleData) {
-            const btnHTML = `
-                <div class="module-btn" onclick="openModule('${tag}')">
+            // 1. Build the Home Grid Button
+            gridContainer.innerHTML += `
+                <div class="module-btn" onclick="switchView('view-${tag}', 'nav-${tag}')">
                     <i class="fas ${moduleData.icon}"></i>
                     <span>${moduleData.name}</span>
                 </div>
             `;
-            gridContainer.innerHTML += btnHTML;
+            
+            // 2. Build the Bottom Nav Item
+            navHTML += `
+                <div class="bottom-nav-item" id="nav-${tag}" onclick="switchView('view-${tag}', 'nav-${tag}')">
+                    <i class="fas ${moduleData.icon}"></i>${moduleData.name}
+                </div>
+            `;
+
+            // 3. Auto-generate the invisible screen (view) for this module
+            if (!document.getElementById(`view-${tag}`)) {
+                workspace.innerHTML += `
+                    <div id="view-${tag}" class="module-view">
+                        <div class="dashboard-card">
+                            <h2>${moduleData.name} Module</h2>
+                            <p>This workspace is ready for development.</p>
+                        </div>
+                    </div>
+                `;
+            }
         }
     });
 
-    // Fallback if no tags match
+    // Inject the final Nav Bar HTML
+    navContainer.innerHTML = navHTML;
+
     if (gridContainer.innerHTML === '') {
-        gridContainer.innerHTML = '<p style="color: red; grid-column: span 2; text-align: center;">No authorized modules found. Contact Administrator.</p>';
+        gridContainer.innerHTML = '<p style="color: red; grid-column: span 2; text-align: center;">No authorized modules found.</p>';
     }
 }
 
-function openModule(moduleTag) {
-    // Placeholder function for future module routing
-    alert(`Navigating to: ${MODULE_CONFIG[moduleTag].name} module...`);
+// --- SPA VIEW SWITCHER ---
+function switchView(viewId, navId) {
+    // Hide all screens
+    const allViews = document.querySelectorAll('.module-view');
+    allViews.forEach(view => view.style.display = 'none');
+
+    // Remove 'active' highlight from all bottom nav icons
+    const allNavs = document.querySelectorAll('.bottom-nav-item');
+    allNavs.forEach(nav => nav.classList.remove('active'));
+
+    // Show selected screen and highlight selected nav icon
+    const selectedView = document.getElementById(viewId);
+    if (selectedView) selectedView.style.display = 'block';
+
+    const selectedNav = document.getElementById(navId);
+    if (selectedNav) {
+        selectedNav.classList.add('active');
+        // Auto-scroll the nav bar so the clicked icon is centered (great for mobile)
+        selectedNav.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
 }
 
 // --- TOP BAR INTERACTIONS ---
@@ -97,9 +139,7 @@ function toggleProfileMenu() {
 window.onclick = function(event) {
     if (!event.target.matches('.avatar-circle')) {
         const menu = document.getElementById('profileMenu');
-        if (menu && menu.classList.contains('show')) {
-            menu.classList.remove('show');
-        }
+        if (menu && menu.classList.contains('show')) menu.classList.remove('show');
     }
 }
 
