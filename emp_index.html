@@ -50,7 +50,7 @@
     </div>
 
     <!-- ========================================= -->
-    <!-- VIEW 2: EMPLOYEE DASHBOARD (Shell Only)   -->
+    <!-- VIEW 2: EMPLOYEE DASHBOARD                -->
     <!-- ========================================= -->
     <div id="dashboardView">
         
@@ -79,20 +79,23 @@
                 </div>
             </div>
 
-            <!-- We will build specific field modules inside this workspace -->
+            <!-- DYNAMIC WORKSPACE -->
             <div class="content-area" id="mainWorkspace">
-                <div class="dashboard-card" style="text-align: center; margin-top: 50px;">
-                    <i class="fas fa-tools" style="font-size: 40px; color: #FBB03B; margin-bottom: 15px;"></i>
-                    <h2>Welcome to the Field App</h2>
-                    <p>Employee dashboard architecture is ready for development.</p>
+                
+                <!-- The Dynamic Home Screen -->
+                <div id="homeView">
+                    <h3 style="margin-top: 0; color: #333;">Your Authorized Modules</h3>
+                    <!-- JavaScript will inject the custom buttons right here -->
+                    <div class="module-grid" id="dynamicModuleGrid"></div>
                 </div>
+
             </div>
         </div>
 
         <!-- Bottom Navigation (Mobile Only) -->
         <div class="bottom-nav">
             <div class="bottom-nav-item active"><i class="fas fa-home"></i>Home</div>
-            <!-- Modules will be added here based on your instructions -->
+            <!-- Additional global modules like Social can be pinned here later -->
         </div>
     </div>
 
