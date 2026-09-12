@@ -1,25 +1,13 @@
 // ==========================================
-// EMPLOYEE DASHBOARD LOGIC (emp_dashboard.js)
-// Bottom-Nav-Only Navigation System & Module Logic
+// EMPLOYEE DASHBOARD & PRAYOSHA SITE MGT LOGIC
 // ==========================================
 
-// MASTER MODULE DICTIONARY
+const GAS_WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE"; // IMPORTANT: Update this!
+
 const MODULE_CONFIG = {
     'SiteMgt': { name: 'Site Mgt', icon: 'fa-hard-hat', title: 'Site Management' },
     'ExtAgencies': { name: 'Agencies', icon: 'fa-handshake', title: 'External Agencies' },
-    'InvLog': { name: 'Inventory', icon: 'fa-boxes', title: 'Inventory & Logistics' },
-    'SafetyQC': { name: 'Safety & QC', icon: 'fa-shield-alt', title: 'Safety & Quality Control' },
-    'Sales': { name: 'Sales', icon: 'fa-chart-line', title: 'Sales Management' },
-    'HR': { name: 'HR', icon: 'fa-users-cog', title: 'Human Resources' },
-    'Social': { name: 'Social', icon: 'fa-comments', title: 'Internal Communications' },
-    'PettyCash': { name: 'Petty Cash', icon: 'fa-wallet', title: 'Petty Cash Management' },
-    'Reports': { name: 'Reports', icon: 'fa-chart-pie', title: 'Report Generation' },
-    'PreDev': { name: 'Pre-Dev', icon: 'fa-file-signature', title: 'Pre-Development' },
-    'Calc': { name: 'Calculators', icon: 'fa-calculator', title: 'Construction Calculators' },
-    'DigitalTwin': { name: 'Digital Twin', icon: 'fa-cubes', title: 'Digital Twin 3D' },
-    'Compliance': { name: 'Compliance', icon: 'fa-file-contract', title: 'Compliance & RERA' },
-    'AssetMaint': { name: 'Assets', icon: 'fa-tools', title: 'Asset Maintenance' },
-    'Accounts': { name: 'Accounts', icon: 'fa-file-invoice-dollar', title: 'Accounts & Expenses' }
+    'InvLog': { name: 'Inventory', icon: 'fa-boxes', title: 'Inventory & Logistics' }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -28,214 +16,250 @@ document.addEventListener("DOMContentLoaded", () => {
         const user = JSON.parse(userData);
         activateDashboard(user);
     }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 });
 
+// --- CORE API BRIDGE (Replaces google.script.run) ---
+function apiCall(action, payload = {}) {
+    return fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: action, payload: payload })
+    }).then(res => res.json());
+}
+
+// --- DASHBOARD ROUTING ---
 function activateDashboard(user) {
     document.getElementById('loginView').style.display = 'none';
     document.getElementById('dashboardView').style.display = 'flex';
-
     document.getElementById('displayFullName').innerText = user.name;
     document.getElementById('displayRole').innerText = user.role;
     
     const nameParts = user.name.split(' ');
     let initials = nameParts[0].charAt(0).toUpperCase();
-    if (nameParts.length > 1) {
-        initials += nameParts[1].charAt(0).toUpperCase();
-    }
+    if (nameParts.length > 1) initials += nameParts[1].charAt(0).toUpperCase();
     document.getElementById('userAvatar').innerText = initials;
 
-    // Generate bottom navigation exclusively
     buildBottomNavOnly(user.access);
 }
 
 function buildBottomNavOnly(accessString) {
     const navContainer = document.getElementById('dynamicBottomNav');
-    const workspace = document.getElementById('mainWorkspace');
+    navContainer.innerHTML = `<div class="bottom-nav-item active" id="nav-home" onclick="switchView('view-home', 'nav-home')"><i class="fas fa-home"></i>Home</div>`;
 
-    // Remove any previously generated placeholder module screens to prevent duplicates
-    const oldScreens = document.querySelectorAll('.dynamic-screen');
-    oldScreens.forEach(screen => screen.remove());
+    let authorizedTags = accessString.trim().toLowerCase() === 'all' ? Object.keys(MODULE_CONFIG) : accessString.split(',').map(tag => tag.trim());
 
-    // Reset bottom navigation with Home icon
-    navContainer.innerHTML = `
-        <div class="bottom-nav-item active" id="nav-home" onclick="switchView('view-home', 'nav-home')">
-            <i class="fas fa-home"></i>Home
-        </div>
-    `;
-
-    // Determine authorized modules
-    let authorizedTags = [];
-    if (accessString && accessString.trim().toLowerCase() === 'all') {
-        authorizedTags = Object.keys(MODULE_CONFIG);
-    } else if (accessString) {
-        authorizedTags = accessString.split(',').map(tag => tag.trim());
-    }
-
-    // Build navigation items and screen containers
     authorizedTags.forEach(tag => {
         const moduleData = MODULE_CONFIG[tag];
         if (moduleData) {
-            // 1. Add item to bottom navigation bar
             const navBtn = document.createElement('div');
             navBtn.className = 'bottom-nav-item';
             navBtn.id = `nav-${tag}`;
             navBtn.onclick = () => switchView(`view-${tag}`, `nav-${tag}`);
             navBtn.innerHTML = `<i class="fas ${moduleData.icon}"></i>${moduleData.name}`;
             navContainer.appendChild(navBtn);
-
-            // 2. Add placeholder module screen ONLY if it doesn't already exist in our HTML (like view-SiteMgt)
-            if (!document.getElementById(`view-${tag}`)) {
-                const screenDiv = document.createElement('div');
-                screenDiv.id = `view-${tag}`;
-                screenDiv.className = 'module-view dynamic-screen';
-                screenDiv.innerHTML = `
-                    <div class="dashboard-card" style="border-top: 4px solid var(--primary-color);">
-                        <h2 style="margin-top: 0; color: #333;">${moduleData.title}</h2>
-                        <p style="color: #666;">Ready for module implementation.</p>
-                    </div>
-                `;
-                workspace.appendChild(screenDiv);
-            }
         }
     });
 }
 
-// --- SPA VIEW SWITCHER ---
 function switchView(viewId, navId) {
-    // Hide all views
-    const allViews = document.querySelectorAll('.module-view');
-    allViews.forEach(view => view.style.display = 'none');
-
-    // Deactivate all nav buttons
-    const allNavs = document.querySelectorAll('.bottom-nav-item');
-    allNavs.forEach(nav => nav.classList.remove('active'));
-
-    // Show target view
+    document.querySelectorAll('.module-view').forEach(view => view.style.display = 'none');
+    document.querySelectorAll('.bottom-nav-item').forEach(nav => nav.classList.remove('active'));
+    
     const selectedView = document.getElementById(viewId);
-    if (selectedView) {
-        selectedView.style.display = 'block';
-    }
+    if (selectedView) selectedView.style.display = 'block';
 
-    // Activate target nav button and auto-scroll horizontally on mobile
     const selectedNav = document.getElementById(navId);
     if (selectedNav) {
         selectedNav.classList.add('active');
         selectedNav.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
-}
 
-// --- TOP BAR & PROFILE ---
-function toggleProfileMenu() {
-    document.getElementById('profileMenu').classList.toggle('show');
-}
-
-window.onclick = function(event) {
-    if (!event.target.matches('.avatar-circle')) {
-        const menu = document.getElementById('profileMenu');
-        if (menu && menu.classList.contains('show')) {
-            menu.classList.remove('show');
-        }
+    if (viewId === 'view-SiteMgt' && Object.keys(siteHierarchy).length === 0) {
+        initTaskModule(); 
     }
 }
 
+function toggleProfileMenu() { document.getElementById('profileMenu').classList.toggle('show'); }
 function performLogout() {
     localStorage.removeItem('prayosha_employee_user');
-    document.getElementById('pinInput').value = '';
-    document.getElementById('statusMessage').innerText = '';
-    document.getElementById('dashboardView').style.display = 'none';
-    document.getElementById('loginView').style.display = 'flex';
+    location.reload();
 }
 
 // ==========================================
-// SITE MANAGEMENT MODULE LOGIC
+// SITE MANAGEMENT ENGINE
 // ==========================================
+let siteHierarchy = {}; 
+let globalChecklists = {}; 
 
-// Dummy Data structure (Will be replaced with API call to Zones tab)
-const ZONE_DATA = {
-    "Tower A": {
-        "Basement": ["Basement Parking", "Lift Area", "Staircase"],
-        "Ground Floor": ["Commercial Shop", "Foyer", "Security Cabin"],
-        "First Floor": ["Commercial Shop", "Passage", "Washroom"]
-    },
-    "Tower B": {
-        "Ground Floor": ["Foyer", "Clubhouse", "Garden"],
-        "First Floor": ["Residential Flat", "Passage", "Lift Area"]
-    }
-};
+function switchTskTab(activeIndex) {
+    const tskTabs = ['tabLog', 'tabActive', 'tabPending'];
+    const tskSections = ['sectionLog', 'sectionActive', 'sectionPending'];
 
-function smUpdateFloors() {
-    const towerSel = document.getElementById('sm-tower').value;
-    const floorSel = document.getElementById('sm-floor');
-    const catSel = document.getElementById('sm-category');
-    const btn = document.getElementById('sm-load-btn');
-
-    // Reset downstream inputs
-    floorSel.innerHTML = '<option value="">-- Select Floor --</option>';
-    catSel.innerHTML = '<option value="">-- Select Category --</option>';
-    floorSel.disabled = true;
-    catSel.disabled = true;
-    btn.disabled = true;
-    document.getElementById('sm-checklist-container').style.display = 'none';
-
-    if (towerSel && ZONE_DATA[towerSel]) {
-        const floors = Object.keys(ZONE_DATA[towerSel]);
-        floors.forEach(floor => {
-            floorSel.innerHTML += `<option value="${floor}">${floor}</option>`;
-        });
-        floorSel.disabled = false;
-    }
-}
-
-function smUpdateCategories() {
-    const towerSel = document.getElementById('sm-tower').value;
-    const floorSel = document.getElementById('sm-floor').value;
-    const catSel = document.getElementById('sm-category');
-    const btn = document.getElementById('sm-load-btn');
-
-    // Reset downstream inputs
-    catSel.innerHTML = '<option value="">-- Select Category --</option>';
-    catSel.disabled = true;
-    btn.disabled = true;
-    document.getElementById('sm-checklist-container').style.display = 'none';
-
-    if (floorSel && ZONE_DATA[towerSel][floorSel]) {
-        const categories = ZONE_DATA[towerSel][floorSel];
-        categories.forEach(cat => {
-            catSel.innerHTML += `<option value="${cat}">${cat}</option>`;
-        });
-        catSel.disabled = false;
-    }
-}
-
-function smEnableChecklistBtn() {
-    const catSel = document.getElementById('sm-category').value;
-    const btn = document.getElementById('sm-load-btn');
-    btn.disabled = catSel === "";
-}
-
-function smLoadChecklist() {
-    const category = document.getElementById('sm-category').value;
-    const container = document.getElementById('sm-checklist-container');
-    const taskList = document.getElementById('sm-task-list');
-
-    // Show the container
-    container.style.display = 'block';
+    tskTabs.forEach((id, i) => {
+        const btn = document.getElementById(id); 
+        const sec = document.getElementById(tskSections[i]);
+        if(btn && sec) {
+            if(i === activeIndex) { 
+                btn.className = 'tsk-tab px-5 py-2.5 rounded-xl text-sm font-bold transition bg-[#1E3A5F] text-white shadow-md'; 
+                sec.style.display = 'block'; 
+            } else { 
+                btn.className = 'tsk-tab px-5 py-2.5 rounded-xl text-sm font-bold transition text-slate-500 hover:bg-white/50'; 
+                sec.style.display = 'none'; 
+            }
+        }
+    });
     
-    // Generate dummy task UI based on the category selection
-    taskList.innerHTML = `
-        <div class="dashboard-card" style="padding: 15px; border-left: 4px solid #ff9800; margin-bottom: 10px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <strong style="color: #333; font-size: 14px;">Brickwork & Plaster</strong>
-                <span style="font-size: 11px; color: #888;">TSK-1001</span>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button style="flex: 1; padding: 8px; background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; border-radius: 6px; font-weight: bold; cursor: pointer;">
-                    <i class="fas fa-check"></i> Complete
-                </button>
-                <button style="flex: 1; padding: 8px; background: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; border-radius: 6px; font-weight: bold; cursor: pointer;">
-                    <i class="fas fa-camera"></i> Photo
-                </button>
-            </div>
-        </div>
-    `;
+    if (activeIndex > 0) fetchTasksOverview(); 
+}
+
+function attachTaskListeners() {
+    document.getElementById('tabLog').onclick = () => switchTskTab(0);
+    document.getElementById('tabActive').onclick = () => switchTskTab(1);
+    document.getElementById('tabPending').onclick = () => switchTskTab(2);
+
+    document.getElementById('taskTower').onchange = function() {
+        const tower = this.value; 
+        const floorSelect = document.getElementById('taskFloor'); 
+        document.getElementById('taskZones').innerHTML = '<div class="text-sm font-bold text-slate-400 text-center p-4">Select Floor and Category to view units.</div>';
+        floorSelect.innerHTML = '<option value="">-- Select --</option>'; 
+        if (tower && siteHierarchy[tower]) { 
+            for (let floor in siteHierarchy[tower]) floorSelect.innerHTML += `<option value="${floor}">${floor}</option>`; 
+        }
+    };
+
+    document.getElementById('taskFloor').onchange = function() {
+        const tower = document.getElementById('taskTower').value; 
+        const floor = this.value; 
+        const catSelect = document.getElementById('taskCategory');
+        catSelect.innerHTML = '<option value="">-- Select --</option>';
+        if (tower && floor && siteHierarchy[tower][floor]) { 
+            for (let cat in siteHierarchy[tower][floor]) catSelect.innerHTML += `<option value="${cat}">${cat}</option>`; 
+        }
+    };
+
+    document.getElementById('taskCategory').onchange = function() {
+        const tower = document.getElementById('taskTower').value; 
+        const floor = document.getElementById('taskFloor').value; 
+        const category = this.value;
+        const zoneContainer = document.getElementById('taskZones'); 
+        const taskDropdown = document.getElementById('taskChecklist');
+        
+        zoneContainer.innerHTML = ''; 
+        taskDropdown.innerHTML = '<option value="">-- Select Task --</option>';
+        
+        if (tower && floor && category && siteHierarchy[tower][floor][category]) {
+            const zones = siteHierarchy[tower][floor][category]; // These are the Sub-Categories (e.g., Shop 101)
+            
+            // Add a "Select All" button
+            zoneContainer.innerHTML += `<button type="button" class="mb-4 bg-white border border-slate-200 text-slate-600 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-slate-50 transition shadow-sm" onclick="toggleSelectAllZones()">Select All</button>`;
+
+            zones.forEach(zone => {
+                zoneContainer.innerHTML += `
+                    <div class="flex items-center gap-3 mb-3 pb-3 border-b border-slate-200/50">
+                        <input type="checkbox" id="chk_${zone.id}" name="taskZoneSelection" value="${zone.id}" class="w-4 h-4 text-[#F59E0B]">
+                        <label for="chk_${zone.id}" class="text-sm font-bold text-[#1E3A5F]">${zone.label}</label>
+                    </div>`;
+            });
+
+            let availableTasks = globalChecklists[category] || [];
+            availableTasks.forEach(t => taskDropdown.innerHTML += `<option value="${t}">${t}</option>`);
+        }
+    };
+
+    document.getElementById('submitTaskBtn').onclick = function() {
+        const btn = this; 
+        const msgDiv = document.getElementById('taskStatusMsg');
+        const checkedBoxes = Array.from(document.querySelectorAll('input[name="taskZoneSelection"]:checked')).map(cb => cb.value);
+        
+        const data = {
+            zoneIds: checkedBoxes,
+            description: document.getElementById('taskChecklist').value, 
+            agency: document.getElementById('taskAgency').value, 
+            status: document.getElementById('taskStatus').value,
+            user: JSON.parse(localStorage.getItem('prayosha_employee_user')).name
+        };
+        
+        if (data.zoneIds.length === 0 || !data.description || !data.agency) { 
+            msgDiv.innerText = 'Please select a unit, a task, and an agency.'; 
+            msgDiv.className = 'font-bold text-sm text-rose-500'; return; 
+        }
+        
+        btn.disabled = true; msgDiv.innerText = 'Assigning...'; msgDiv.className = 'font-bold text-sm text-slate-500';
+        
+        apiCall('addCivilTask', data).then(res => {
+            btn.disabled = false;
+            msgDiv.className = res.success ? 'font-bold text-sm text-emerald-600' : 'font-bold text-sm text-rose-500'; 
+            msgDiv.innerText = res.message;
+            
+            if (res.success) {
+                document.querySelectorAll('input[name="taskZoneSelection"]').forEach(cb => cb.checked = false);
+                document.getElementById('taskChecklist').value = ''; 
+                setTimeout(() => msgDiv.innerText = '', 3000);
+            }
+        });
+    };
+}
+
+function toggleSelectAllZones() {
+    const checkboxes = document.querySelectorAll('input[name="taskZoneSelection"]');
+    let allChecked = true; 
+    checkboxes.forEach(cb => { if (!cb.checked) allChecked = false; });
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+}
+
+function initTaskModule() {
+    attachTaskListeners();
+    
+    apiCall('getZoneHierarchy').then(res => {
+        if (res.success) {
+            siteHierarchy = res.data; 
+            const towerSelect = document.getElementById('taskTower');
+            for (let tower in siteHierarchy) towerSelect.innerHTML += `<option value="${tower}">${tower}</option>`; 
+        }
+    });
+
+    apiCall('getTaskAgencies').then(res => {
+        if (res.success) {
+            const agencySelect = document.getElementById('taskAgency');
+            res.data.forEach(ag => agencySelect.innerHTML += `<option value="${ag}">${ag}</option>`);
+        }
+    });
+
+    apiCall('getChecklists').then(res => {
+        if (res.success) globalChecklists = res.data;
+    });
+}
+
+function fetchTasksOverview() {
+    document.getElementById('activeTasksBody').innerHTML = 'Loading tasks...';
+    document.getElementById('pendingTasksBody').innerHTML = 'Loading zones...';
+    
+    apiCall('getCategorizedTasksData').then(res => {
+        if (res.success) {
+            renderActiveTasks(res.data.active);
+            renderPendingZones(res.data.pending);
+        }
+    });
+}
+
+function renderActiveTasks(data) {
+    const container = document.getElementById('activeTasksBody');
+    if (!data.length) return container.innerHTML = '<div class="text-center p-4 bg-white rounded-xl shadow-sm font-bold text-slate-400">No active tasks found.</div>';
+    
+    let html = '<table class="w-full text-left bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"><thead class="bg-slate-50 border-b text-[10px] text-slate-500 font-extrabold uppercase tracking-widest"><tr><th class="p-4">UNIT / SUB-CAT</th><th class="p-4">TASK</th><th class="p-4">AGENCY</th><th class="p-4">STATUS</th></tr></thead><tbody class="divide-y divide-slate-100">';
+    data.forEach(task => {
+        html += `<tr><td class="p-4 font-bold text-[#1E3A5F]">${task.subCat}<br><span class="text-[10px] text-slate-400 font-mono">${task.zone}</span></td><td class="p-4 text-sm">${task.desc}</td><td class="p-4 text-[#F59E0B] font-bold text-sm">${task.agency}</td><td class="p-4"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">${task.status}</span></td></tr>`;
+    });
+    container.innerHTML = html + '</tbody></table>';
+}
+
+function renderPendingZones(data) {
+    const container = document.getElementById('pendingTasksBody');
+    if (!data.length) return container.innerHTML = '<div class="text-center p-4 bg-white rounded-xl shadow-sm font-bold text-emerald-500">All available units are currently assigned!</div>';
+    
+    let html = '<table class="w-full text-left bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"><thead class="bg-slate-50 border-b text-[10px] text-slate-500 font-extrabold uppercase tracking-widest"><tr><th class="p-4">UNASSIGNED UNIT</th><th class="p-4">TOWER</th><th class="p-4">CATEGORY</th></tr></thead><tbody class="divide-y divide-slate-100">';
+    data.forEach(zone => {
+        html += `<tr><td class="p-4 font-bold text-amber-700">${zone.subCat}<br><span class="text-[10px] text-slate-400 font-mono">${zone.zoneId}</span></td><td class="p-4 text-slate-500 text-sm font-bold">${zone.tower}</td><td class="p-4 text-slate-500 text-sm font-bold">${zone.category}</td></tr>`;
+    });
+    container.innerHTML = html + '</tbody></table>';
 }
