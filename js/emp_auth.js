@@ -3,7 +3,6 @@
 // Connects to the Unified API Gateway
 // ==========================================
 
-// IMPORTANT: Paste the newly generated Web App URL here!
 const AUTH_API_URL = "https://script.google.com/macros/s/AKfycbxEnXpxacfhZvdW7cbOmR3Mu90moQQ0bOdyGBsDlUU1mRml737nK57tqog2mzg7Bs5wbw/exec"; 
 
 function attemptLogin() {
