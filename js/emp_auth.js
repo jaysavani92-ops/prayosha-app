@@ -1,49 +1,63 @@
 // ==========================================
-// EMPLOYEE AUTHENTICATION (emp_auth.js)
+// EMPLOYEE AUTHENTICATION LOGIC (emp_auth.js)
+// Connects to the Unified API Gateway
 // ==========================================
 
-// --- PASTE YOUR API URL HERE ---
-const API_URL = 'https://script.google.com/macros/s/AKfycbxEnXpxacfhZvdW7cbOmR3Mu90moQQ0bOdyGBsDlUU1mRml737nK57tqog2mzg7Bs5wbw/exec'; 
+// IMPORTANT: Paste the newly generated Web App URL here!
+const AUTH_API_URL = "https://script.google.com/macros/s/AKfycbxEnXpxacfhZvdW7cbOmR3Mu90moQQ0bOdyGBsDlUU1mRml737nK57tqog2mzg7Bs5wbw/exec"; 
 
-async function attemptLogin() {
+function attemptLogin() {
     const pin = document.getElementById('pinInput').value;
+    const statusMsg = document.getElementById('statusMessage');
     const btn = document.getElementById('loginBtn');
-    
-    if (pin.length !== 4) { 
-        showMessage("Please enter a 4-digit PIN.", "error"); 
-        return; 
+
+    if (pin.length < 4) {
+        statusMsg.innerText = "Please enter your 4-digit PIN.";
+        statusMsg.style.color = "#ef4444";
+        return;
     }
 
-    btn.disabled = true; 
-    btn.innerText = "Verifying..."; 
-    showMessage("", "");
+    statusMsg.innerText = "Authenticating...";
+    statusMsg.style.color = "#F59E0B";
+    btn.disabled = true;
 
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'login', pin: pin })
-        });
-        const data = await response.json();
-
-        if (data.status === 'success') {
-            // Check if the user actually has permission to view the employee app
-            // In the future, we can add logic here to reject Directors from the Employee portal if desired
+    fetch(AUTH_API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'authenticateUser',
+            payload: { pin: pin }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            statusMsg.innerText = "Login Successful!";
+            statusMsg.style.color = "#10b981";
+            
+            // Save user data securely to local storage
             localStorage.setItem('prayosha_employee_user', JSON.stringify(data.user));
-            activateDashboard(data.user);
+            
+            // Trigger the dashboard generation logic located in emp_dashboard.js
+            setTimeout(() => {
+                activateDashboard(data.user);
+            }, 500);
         } else {
-            showMessage(data.message, "error");
+            statusMsg.innerText = data.message;
+            statusMsg.style.color = "#ef4444";
+            btn.disabled = false;
         }
-    } catch (error) {
-        showMessage("Network error. Checking local offline cache...", "error");
+    })
+    .catch(error => {
+        statusMsg.innerText = "Connection error. Please try again.";
+        statusMsg.style.color = "#ef4444";
+        btn.disabled = false;
         console.error("Login Error:", error);
-    } finally {
-        btn.disabled = false; 
-        btn.innerText = "Login";
-    }
+    });
 }
 
-function showMessage(text, type) {
-    const msgDiv = document.getElementById('statusMessage');
-    msgDiv.innerText = text; 
-    msgDiv.className = `message ${type}`;
-}
+// Allow pressing "Enter" on the keyboard to login
+document.getElementById('pinInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        attemptLogin();
+    }
+});
