@@ -79,24 +79,25 @@
                 </div>
             </div>
 
-            <!-- DYNAMIC WORKSPACE -->
+            <!-- DYNAMIC WORKSPACE (This holds all the screens) -->
             <div class="content-area" id="mainWorkspace">
                 
-                <!-- The Dynamic Home Screen -->
-                <div id="homeView">
+                <!-- Screen 1: The Dynamic Home Grid -->
+                <div id="view-home" class="module-view" style="display: block;">
                     <h3 style="margin-top: 0; color: #333;">Your Authorized Modules</h3>
-                    <!-- JavaScript will inject the custom buttons right here -->
                     <div class="module-grid" id="dynamicModuleGrid"></div>
                 </div>
+
+                <!-- Future Modules will be injected below by JS -->
 
             </div>
         </div>
 
-        <!-- Bottom Navigation (Mobile Only) -->
-        <div class="bottom-nav">
-            <div class="bottom-nav-item active"><i class="fas fa-home"></i>Home</div>
-            <!-- Additional global modules like Social can be pinned here later -->
+        <!-- DYNAMIC BOTTOM NAVIGATION BAR -->
+        <div class="bottom-nav" id="dynamicBottomNav">
+            <!-- JavaScript will inject the Home icon and authorized Module icons here -->
         </div>
+
     </div>
 
     <!-- ========================================= -->
