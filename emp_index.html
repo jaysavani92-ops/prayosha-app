@@ -81,7 +81,9 @@
             <!-- DYNAMIC WORKSPACE (All module views live here) -->
             <div class="content-area" id="mainWorkspace">
                 
-                <!-- Screen 1: Home / Operational Overview -->
+                <!-- ========================================== -->
+                <!-- Screen 1: Home / Operational Overview      -->
+                <!-- ========================================== -->
                 <div id="view-home" class="module-view" style="display: block;">
                     <div class="dashboard-card" style="border-left: 4px solid var(--primary-color);">
                         <h2 style="margin-top: 0; color: #333;">Field Command Overview</h2>
@@ -94,7 +96,61 @@
                     </div>
                 </div>
 
-                <!-- Dynamic module screens are generated here via JavaScript -->
+                <!-- ========================================== -->
+                <!-- Screen 2: SITE MANAGEMENT                  -->
+                <!-- ========================================== -->
+                <div id="view-SiteMgt" class="module-view">
+                    
+                    <!-- Module Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 style="margin: 0; color: #333;">Site Management</h2>
+                        <span style="background-color: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold;">
+                            <i class="fas fa-link"></i> Prayosha Crown
+                        </span>
+                    </div>
+
+                    <!-- Cascading Selection Card -->
+                    <div class="dashboard-card" style="border-top: 4px solid var(--primary-color);">
+                        <h4 style="margin: 0 0 15px 0; color: #444;"><i class="fas fa-map-marker-alt" style="color: var(--primary-color); margin-right: 8px;"></i>Select Work Zone</h4>
+                        
+                        <div class="input-group" style="margin-bottom: 12px;">
+                            <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">TOWER / BLOCK</label>
+                            <select id="sm-tower" class="project-select" style="width: 100%;" onchange="smUpdateFloors()">
+                                <option value="">-- Select Block --</option>
+                                <option value="Tower A">Tower A (Commercial)</option>
+                                <option value="Tower B">Tower B (Residential)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group" style="margin-bottom: 12px;">
+                            <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">FLOOR LEVEL</label>
+                            <select id="sm-floor" class="project-select" style="width: 100%;" disabled onchange="smUpdateCategories()">
+                                <option value="">-- Select Floor --</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group" style="margin-bottom: 15px;">
+                            <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">ZONE / CATEGORY</label>
+                            <select id="sm-category" class="project-select" style="width: 100%;" disabled onchange="smEnableChecklistBtn()">
+                                <option value="">-- Select Category --</option>
+                            </select>
+                        </div>
+
+                        <button id="sm-load-btn" class="login-btn" style="width: 100%; padding: 12px; font-size: 15px;" disabled onclick="smLoadChecklist()">
+                            Load Master Checklist <i class="fas fa-arrow-down" style="margin-left: 8px;"></i>
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Checklist Container (Hidden until loaded) -->
+                    <div id="sm-checklist-container" style="display: none;">
+                        <h4 style="margin: 20px 0 10px 0; color: #333;">Pending Tasks</h4>
+                        <div id="sm-task-list">
+                            <!-- Tasks will generate here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Future dynamic screens for other modules will be injected here by JS -->
 
             </div>
         </div>
