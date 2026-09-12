@@ -13,10 +13,10 @@
     <meta name="apple-mobile-web-app-title" content="Prayosha Field">
     <link rel="apple-touch-icon" href="assets/logo.jpg">
 
-    <!-- FontAwesome for modern UI Icons -->
+    <!-- FontAwesome for UI Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Link to STRICTLY EMPLOYEE CSS Files -->
+    <!-- Link to Employee CSS Files -->
     <link rel="stylesheet" href="css/emp_style.css">
     <link rel="stylesheet" href="css/emp_login.css">
 </head>
@@ -33,7 +33,6 @@
                 <img src="assets/logo.jpg" alt="Prayosha Logo" class="company-logo">
             </div>
 
-            <!-- Tailored text for the field application -->
             <h1 class="login-headline">Field Operations<br>Portal</h1>
             <p class="login-subheadline">Secure login for Prayosha site management and workforce.</p>
             
@@ -54,11 +53,11 @@
     <!-- ========================================= -->
     <div id="dashboardView">
         
-        <!-- Mobile-First Main Content Area -->
+        <!-- Main Content Header -->
         <div class="main-content">
             <div class="top-header">
                 <div class="header-left">
-                    <div style="font-weight: bold; color: #333; font-size: 18px;">Prayosha Field App</div>
+                    <div style="font-weight: bold; color: #333; font-size: 17px;">Prayosha Field App</div>
                 </div>
 
                 <div class="header-right">
@@ -79,30 +78,35 @@
                 </div>
             </div>
 
-            <!-- DYNAMIC WORKSPACE (This holds all the screens) -->
+            <!-- DYNAMIC WORKSPACE (All module views live here) -->
             <div class="content-area" id="mainWorkspace">
                 
-                <!-- Screen 1: The Dynamic Home Grid -->
+                <!-- Screen 1: Home / Operational Overview -->
                 <div id="view-home" class="module-view" style="display: block;">
-                    <h3 style="margin-top: 0; color: #333;">Your Authorized Modules</h3>
-                    <div class="module-grid" id="dynamicModuleGrid"></div>
+                    <div class="dashboard-card" style="border-left: 4px solid var(--primary-color);">
+                        <h2 style="margin-top: 0; color: #333;">Field Command Overview</h2>
+                        <p style="color: #666; margin-bottom: 10px;">Welcome back. Use the navigation bar at the bottom to access your authorized modules directly.</p>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h4 style="margin: 0 0 10px 0; color: #444;"><i class="fas fa-info-circle" style="color: var(--primary-color); margin-right: 8px;"></i>Quick Briefing</h4>
+                        <p style="font-size: 13px; color: #666; margin: 0; line-height: 1.5;">Ensure all daily labor logs, material arrivals, and safety checklists are updated before shift end.</p>
+                    </div>
                 </div>
 
-                <!-- Future Modules will be injected below by JS -->
+                <!-- Dynamic module screens are generated here via JavaScript -->
 
             </div>
         </div>
 
-        <!-- DYNAMIC BOTTOM NAVIGATION BAR -->
+        <!-- EXCLUSIVE MODULE NAVIGATION (Bottom Bar Only) -->
         <div class="bottom-nav" id="dynamicBottomNav">
-            <!-- JavaScript will inject the Home icon and authorized Module icons here -->
+            <!-- Populated entirely by emp_dashboard.js -->
         </div>
 
     </div>
 
-    <!-- ========================================= -->
-    <!-- STRICTLY EMPLOYEE JAVASCRIPT FILES        -->
-    <!-- ========================================= -->
+    <!-- SCRIPTS -->
     <script src="js/emp_auth.js"></script>
     <script src="js/emp_dashboard.js"></script>
 
