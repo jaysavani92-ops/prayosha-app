@@ -1,6 +1,6 @@
 // ==========================================
 // EMPLOYEE DASHBOARD LOGIC (emp_dashboard.js)
-// Bottom-Nav-Only Navigation System
+// Bottom-Nav-Only Navigation System & Module Logic
 // ==========================================
 
 // MASTER MODULE DICTIONARY
@@ -52,7 +52,7 @@ function buildBottomNavOnly(accessString) {
     const navContainer = document.getElementById('dynamicBottomNav');
     const workspace = document.getElementById('mainWorkspace');
 
-    // Remove any previously generated module screens
+    // Remove any previously generated placeholder module screens to prevent duplicates
     const oldScreens = document.querySelectorAll('.dynamic-screen');
     oldScreens.forEach(screen => screen.remove());
 
@@ -83,17 +83,19 @@ function buildBottomNavOnly(accessString) {
             navBtn.innerHTML = `<i class="fas ${moduleData.icon}"></i>${moduleData.name}`;
             navContainer.appendChild(navBtn);
 
-            // 2. Add module screen container into workspace
-            const screenDiv = document.createElement('div');
-            screenDiv.id = `view-${tag}`;
-            screenDiv.className = 'module-view dynamic-screen';
-            screenDiv.innerHTML = `
-                <div class="dashboard-card" style="border-top: 4px solid var(--primary-color);">
-                    <h2 style="margin-top: 0; color: #333;">${moduleData.title}</h2>
-                    <p style="color: #666;">Ready for module implementation.</p>
-                </div>
-            `;
-            workspace.appendChild(screenDiv);
+            // 2. Add placeholder module screen ONLY if it doesn't already exist in our HTML (like view-SiteMgt)
+            if (!document.getElementById(`view-${tag}`)) {
+                const screenDiv = document.createElement('div');
+                screenDiv.id = `view-${tag}`;
+                screenDiv.className = 'module-view dynamic-screen';
+                screenDiv.innerHTML = `
+                    <div class="dashboard-card" style="border-top: 4px solid var(--primary-color);">
+                        <h2 style="margin-top: 0; color: #333;">${moduleData.title}</h2>
+                        <p style="color: #666;">Ready for module implementation.</p>
+                    </div>
+                `;
+                workspace.appendChild(screenDiv);
+            }
         }
     });
 }
@@ -142,4 +144,98 @@ function performLogout() {
     document.getElementById('statusMessage').innerText = '';
     document.getElementById('dashboardView').style.display = 'none';
     document.getElementById('loginView').style.display = 'flex';
+}
+
+// ==========================================
+// SITE MANAGEMENT MODULE LOGIC
+// ==========================================
+
+// Dummy Data structure (Will be replaced with API call to Zones tab)
+const ZONE_DATA = {
+    "Tower A": {
+        "Basement": ["Basement Parking", "Lift Area", "Staircase"],
+        "Ground Floor": ["Commercial Shop", "Foyer", "Security Cabin"],
+        "First Floor": ["Commercial Shop", "Passage", "Washroom"]
+    },
+    "Tower B": {
+        "Ground Floor": ["Foyer", "Clubhouse", "Garden"],
+        "First Floor": ["Residential Flat", "Passage", "Lift Area"]
+    }
+};
+
+function smUpdateFloors() {
+    const towerSel = document.getElementById('sm-tower').value;
+    const floorSel = document.getElementById('sm-floor');
+    const catSel = document.getElementById('sm-category');
+    const btn = document.getElementById('sm-load-btn');
+
+    // Reset downstream inputs
+    floorSel.innerHTML = '<option value="">-- Select Floor --</option>';
+    catSel.innerHTML = '<option value="">-- Select Category --</option>';
+    floorSel.disabled = true;
+    catSel.disabled = true;
+    btn.disabled = true;
+    document.getElementById('sm-checklist-container').style.display = 'none';
+
+    if (towerSel && ZONE_DATA[towerSel]) {
+        const floors = Object.keys(ZONE_DATA[towerSel]);
+        floors.forEach(floor => {
+            floorSel.innerHTML += `<option value="${floor}">${floor}</option>`;
+        });
+        floorSel.disabled = false;
+    }
+}
+
+function smUpdateCategories() {
+    const towerSel = document.getElementById('sm-tower').value;
+    const floorSel = document.getElementById('sm-floor').value;
+    const catSel = document.getElementById('sm-category');
+    const btn = document.getElementById('sm-load-btn');
+
+    // Reset downstream inputs
+    catSel.innerHTML = '<option value="">-- Select Category --</option>';
+    catSel.disabled = true;
+    btn.disabled = true;
+    document.getElementById('sm-checklist-container').style.display = 'none';
+
+    if (floorSel && ZONE_DATA[towerSel][floorSel]) {
+        const categories = ZONE_DATA[towerSel][floorSel];
+        categories.forEach(cat => {
+            catSel.innerHTML += `<option value="${cat}">${cat}</option>`;
+        });
+        catSel.disabled = false;
+    }
+}
+
+function smEnableChecklistBtn() {
+    const catSel = document.getElementById('sm-category').value;
+    const btn = document.getElementById('sm-load-btn');
+    btn.disabled = catSel === "";
+}
+
+function smLoadChecklist() {
+    const category = document.getElementById('sm-category').value;
+    const container = document.getElementById('sm-checklist-container');
+    const taskList = document.getElementById('sm-task-list');
+
+    // Show the container
+    container.style.display = 'block';
+    
+    // Generate dummy task UI based on the category selection
+    taskList.innerHTML = `
+        <div class="dashboard-card" style="padding: 15px; border-left: 4px solid #ff9800; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <strong style="color: #333; font-size: 14px;">Brickwork & Plaster</strong>
+                <span style="font-size: 11px; color: #888;">TSK-1001</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button style="flex: 1; padding: 8px; background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    <i class="fas fa-check"></i> Complete
+                </button>
+                <button style="flex: 1; padding: 8px; background: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    <i class="fas fa-camera"></i> Photo
+                </button>
+            </div>
+        </div>
+    `;
 }
