@@ -2,7 +2,7 @@
 // EMPLOYEE DASHBOARD & PRAYOSHA SITE MGT LOGIC
 // ==========================================
 
-const GAS_WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE"; // IMPORTANT: Update this!
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEnXpxacfhZvdW7cbOmR3Mu90moQQ0bOdyGBsDlUU1mRml737nK57tqog2mzg7Bs5wbw/exec"; // IMPORTANT: Update this!
 
 const MODULE_CONFIG = {
     'SiteMgt': { name: 'Site Mgt', icon: 'fa-hard-hat', title: 'Site Management' },
