@@ -1,25 +1,25 @@
 // ==========================================
 // EMPLOYEE DASHBOARD LOGIC (emp_dashboard.js)
-// Handles Dynamic UI & Bottom Navigation routing
+// Bottom-Nav-Only Navigation System
 // ==========================================
 
 // MASTER MODULE DICTIONARY
 const MODULE_CONFIG = {
-    'SiteMgt': { name: 'Site Mgt', icon: 'fa-hard-hat' },
-    'ExtAgencies': { name: 'Agencies', icon: 'fa-handshake' },
-    'InvLog': { name: 'Inventory', icon: 'fa-boxes' },
-    'SafetyQC': { name: 'Safety & QC', icon: 'fa-shield-alt' },
-    'Sales': { name: 'Sales', icon: 'fa-chart-line' },
-    'HR': { name: 'HR', icon: 'fa-users-cog' },
-    'Social': { name: 'Social', icon: 'fa-comments' },
-    'PettyCash': { name: 'Petty Cash', icon: 'fa-wallet' },
-    'Reports': { name: 'Reports', icon: 'fa-chart-pie' },
-    'PreDev': { name: 'Pre-Dev', icon: 'fa-file-signature' },
-    'Calc': { name: 'Calculators', icon: 'fa-calculator' },
-    'DigitalTwin': { name: '3D Twin', icon: 'fa-cubes' },
-    'Compliance': { name: 'Compliance', icon: 'fa-file-contract' },
-    'AssetMaint': { name: 'Assets', icon: 'fa-tools' },
-    'Accounts': { name: 'Accounts', icon: 'fa-file-invoice-dollar' }
+    'SiteMgt': { name: 'Site Mgt', icon: 'fa-hard-hat', title: 'Site Management' },
+    'ExtAgencies': { name: 'Agencies', icon: 'fa-handshake', title: 'External Agencies' },
+    'InvLog': { name: 'Inventory', icon: 'fa-boxes', title: 'Inventory & Logistics' },
+    'SafetyQC': { name: 'Safety & QC', icon: 'fa-shield-alt', title: 'Safety & Quality Control' },
+    'Sales': { name: 'Sales', icon: 'fa-chart-line', title: 'Sales Management' },
+    'HR': { name: 'HR', icon: 'fa-users-cog', title: 'Human Resources' },
+    'Social': { name: 'Social', icon: 'fa-comments', title: 'Internal Communications' },
+    'PettyCash': { name: 'Petty Cash', icon: 'fa-wallet', title: 'Petty Cash Management' },
+    'Reports': { name: 'Reports', icon: 'fa-chart-pie', title: 'Report Generation' },
+    'PreDev': { name: 'Pre-Dev', icon: 'fa-file-signature', title: 'Pre-Development' },
+    'Calc': { name: 'Calculators', icon: 'fa-calculator', title: 'Construction Calculators' },
+    'DigitalTwin': { name: 'Digital Twin', icon: 'fa-cubes', title: 'Digital Twin 3D' },
+    'Compliance': { name: 'Compliance', icon: 'fa-file-contract', title: 'Compliance & RERA' },
+    'AssetMaint': { name: 'Assets', icon: 'fa-tools', title: 'Asset Maintenance' },
+    'Accounts': { name: 'Accounts', icon: 'fa-file-invoice-dollar', title: 'Accounts & Expenses' }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -44,94 +44,85 @@ function activateDashboard(user) {
     }
     document.getElementById('userAvatar').innerText = initials;
 
-    // Trigger the dual UI generation (Grid + Nav Bar)
-    buildAuthorizedUI(user.access);
+    // Generate bottom navigation exclusively
+    buildBottomNavOnly(user.access);
 }
 
-function buildAuthorizedUI(accessString) {
-    const gridContainer = document.getElementById('dynamicModuleGrid');
+function buildBottomNavOnly(accessString) {
     const navContainer = document.getElementById('dynamicBottomNav');
     const workspace = document.getElementById('mainWorkspace');
-    
-    gridContainer.innerHTML = ''; 
 
-    // Always start the Bottom Nav with the "Home" button
-    let navHTML = `
+    // Remove any previously generated module screens
+    const oldScreens = document.querySelectorAll('.dynamic-screen');
+    oldScreens.forEach(screen => screen.remove());
+
+    // Reset bottom navigation with Home icon
+    navContainer.innerHTML = `
         <div class="bottom-nav-item active" id="nav-home" onclick="switchView('view-home', 'nav-home')">
             <i class="fas fa-home"></i>Home
         </div>
     `;
 
+    // Determine authorized modules
     let authorizedTags = [];
-    if (accessString.trim().toLowerCase() === 'all') {
+    if (accessString && accessString.trim().toLowerCase() === 'all') {
         authorizedTags = Object.keys(MODULE_CONFIG);
-    } else {
+    } else if (accessString) {
         authorizedTags = accessString.split(',').map(tag => tag.trim());
     }
 
+    // Build navigation items and screen containers
     authorizedTags.forEach(tag => {
         const moduleData = MODULE_CONFIG[tag];
         if (moduleData) {
-            // 1. Build the Home Grid Button
-            gridContainer.innerHTML += `
-                <div class="module-btn" onclick="switchView('view-${tag}', 'nav-${tag}')">
-                    <i class="fas ${moduleData.icon}"></i>
-                    <span>${moduleData.name}</span>
-                </div>
-            `;
-            
-            // 2. Build the Bottom Nav Item
-            navHTML += `
-                <div class="bottom-nav-item" id="nav-${tag}" onclick="switchView('view-${tag}', 'nav-${tag}')">
-                    <i class="fas ${moduleData.icon}"></i>${moduleData.name}
-                </div>
-            `;
+            // 1. Add item to bottom navigation bar
+            const navBtn = document.createElement('div');
+            navBtn.className = 'bottom-nav-item';
+            navBtn.id = `nav-${tag}`;
+            navBtn.onclick = () => switchView(`view-${tag}`, `nav-${tag}`);
+            navBtn.innerHTML = `<i class="fas ${moduleData.icon}"></i>${moduleData.name}`;
+            navContainer.appendChild(navBtn);
 
-            // 3. Auto-generate the invisible screen (view) for this module
-            if (!document.getElementById(`view-${tag}`)) {
-                workspace.innerHTML += `
-                    <div id="view-${tag}" class="module-view">
-                        <div class="dashboard-card">
-                            <h2>${moduleData.name} Module</h2>
-                            <p>This workspace is ready for development.</p>
-                        </div>
-                    </div>
-                `;
-            }
+            // 2. Add module screen container into workspace
+            const screenDiv = document.createElement('div');
+            screenDiv.id = `view-${tag}`;
+            screenDiv.className = 'module-view dynamic-screen';
+            screenDiv.innerHTML = `
+                <div class="dashboard-card" style="border-top: 4px solid var(--primary-color);">
+                    <h2 style="margin-top: 0; color: #333;">${moduleData.title}</h2>
+                    <p style="color: #666;">Ready for module implementation.</p>
+                </div>
+            `;
+            workspace.appendChild(screenDiv);
         }
     });
-
-    // Inject the final Nav Bar HTML
-    navContainer.innerHTML = navHTML;
-
-    if (gridContainer.innerHTML === '') {
-        gridContainer.innerHTML = '<p style="color: red; grid-column: span 2; text-align: center;">No authorized modules found.</p>';
-    }
 }
 
 // --- SPA VIEW SWITCHER ---
 function switchView(viewId, navId) {
-    // Hide all screens
+    // Hide all views
     const allViews = document.querySelectorAll('.module-view');
     allViews.forEach(view => view.style.display = 'none');
 
-    // Remove 'active' highlight from all bottom nav icons
+    // Deactivate all nav buttons
     const allNavs = document.querySelectorAll('.bottom-nav-item');
     allNavs.forEach(nav => nav.classList.remove('active'));
 
-    // Show selected screen and highlight selected nav icon
+    // Show target view
     const selectedView = document.getElementById(viewId);
-    if (selectedView) selectedView.style.display = 'block';
+    if (selectedView) {
+        selectedView.style.display = 'block';
+    }
 
+    // Activate target nav button and auto-scroll horizontally on mobile
     const selectedNav = document.getElementById(navId);
     if (selectedNav) {
         selectedNav.classList.add('active');
-        // Auto-scroll the nav bar so the clicked icon is centered (great for mobile)
         selectedNav.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
 }
 
-// --- TOP BAR INTERACTIONS ---
+// --- TOP BAR & PROFILE ---
 function toggleProfileMenu() {
     document.getElementById('profileMenu').classList.toggle('show');
 }
@@ -139,7 +130,9 @@ function toggleProfileMenu() {
 window.onclick = function(event) {
     if (!event.target.matches('.avatar-circle')) {
         const menu = document.getElementById('profileMenu');
-        if (menu && menu.classList.contains('show')) menu.classList.remove('show');
+        if (menu && menu.classList.contains('show')) {
+            menu.classList.remove('show');
+        }
     }
 }
 
