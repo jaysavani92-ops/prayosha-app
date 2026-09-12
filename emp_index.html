@@ -5,37 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Prayosha Employee App</title>
     
-    <!-- PWA MANIFEST AND THEME COLORS -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FBB03B">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Prayosha Field">
-    <link rel="apple-touch-icon" href="assets/logo.jpg">
-
-    <!-- FontAwesome for UI Icons -->
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Link to Employee CSS Files -->
     <link rel="stylesheet" href="css/emp_style.css">
     <link rel="stylesheet" href="css/emp_login.css">
 </head>
-<body>
+<body class="antialiased">
 
-    <!-- ========================================= -->
-    <!-- VIEW 1: FIELD EMPLOYEE LOGIN SCREEN       -->
-    <!-- ========================================= -->
+    <!-- VIEW 1: FIELD EMPLOYEE LOGIN SCREEN -->
     <div id="loginView">
         <div class="login-overlay"></div>
         <div class="login-content">
-            
             <div class="login-branding">
                 <img src="assets/logo.jpg" alt="Prayosha Logo" class="company-logo">
             </div>
-
             <h1 class="login-headline">Field Operations<br>Portal</h1>
-            <p class="login-subheadline">Secure login for Prayosha site management and workforce.</p>
-            
+            <p class="login-subheadline">Secure login for Prayosha site management.</p>
             <div class="login-input-area">
                 <input type="password" id="pinInput" maxlength="4" placeholder="••••" inputmode="numeric">
                 <button id="loginBtn" class="login-btn" onclick="attemptLogin()">
@@ -44,27 +35,18 @@
                 <div id="statusMessage" class="message"></div>
                 <div class="forgot-pin">Forgot PIN? Contact Site Admin</div>
             </div>
-
         </div>
     </div>
 
-    <!-- ========================================= -->
-    <!-- VIEW 2: EMPLOYEE DASHBOARD                -->
-    <!-- ========================================= -->
+    <!-- VIEW 2: EMPLOYEE DASHBOARD -->
     <div id="dashboardView">
-        
-        <!-- Main Content Header -->
         <div class="main-content">
             <div class="top-header">
                 <div class="header-left">
                     <div style="font-weight: bold; color: #333; font-size: 17px;">Prayosha Field App</div>
                 </div>
-
                 <div class="header-right">
-                    <div class="icon-btn" title="Notifications">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    
+                    <div class="icon-btn" title="Notifications"><i class="fas fa-bell"></i></div>
                     <div class="profile-container">
                         <div class="avatar-circle" id="userAvatar" onclick="toggleProfileMenu()">--</div>
                         <div class="profile-dropdown" id="profileMenu">
@@ -78,93 +60,102 @@
                 </div>
             </div>
 
-            <!-- DYNAMIC WORKSPACE (All module views live here) -->
+            <!-- DYNAMIC WORKSPACE -->
             <div class="content-area" id="mainWorkspace">
                 
-                <!-- ========================================== -->
-                <!-- Screen 1: Home / Operational Overview      -->
-                <!-- ========================================== -->
+                <!-- HOME SCREEN -->
                 <div id="view-home" class="module-view" style="display: block;">
-                    <div class="dashboard-card" style="border-left: 4px solid var(--primary-color);">
+                    <div class="dashboard-card" style="border-left: 4px solid #F59E0B;">
                         <h2 style="margin-top: 0; color: #333;">Field Command Overview</h2>
-                        <p style="color: #666; margin-bottom: 10px;">Welcome back. Use the navigation bar at the bottom to access your authorized modules directly.</p>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <h4 style="margin: 0 0 10px 0; color: #444;"><i class="fas fa-info-circle" style="color: var(--primary-color); margin-right: 8px;"></i>Quick Briefing</h4>
-                        <p style="font-size: 13px; color: #666; margin: 0; line-height: 1.5;">Ensure all daily labor logs, material arrivals, and safety checklists are updated before shift end.</p>
+                        <p style="color: #666; margin-bottom: 10px;">Welcome back. Use the navigation bar below to access your authorized modules.</p>
                     </div>
                 </div>
 
-                <!-- ========================================== -->
-                <!-- Screen 2: SITE MANAGEMENT                  -->
-                <!-- ========================================== -->
+                <!-- SITE MGT (P.P. SAVANI MERGE) -->
                 <div id="view-SiteMgt" class="module-view">
-                    
-                    <!-- Module Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2 style="margin: 0; color: #333;">Site Management</h2>
-                        <span style="background-color: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold;">
-                            <i class="fas fa-link"></i> Prayosha Crown
-                        </span>
-                    </div>
-
-                    <!-- Cascading Selection Card -->
-                    <div class="dashboard-card" style="border-top: 4px solid var(--primary-color);">
-                        <h4 style="margin: 0 0 15px 0; color: #444;"><i class="fas fa-map-marker-alt" style="color: var(--primary-color); margin-right: 8px;"></i>Select Work Zone</h4>
+                    <div class="glass-panel-light p-6 md:p-8 max-w-6xl mx-auto relative shadow-sm" id="tasksModuleWrapper">
                         
-                        <div class="input-group" style="margin-bottom: 12px;">
-                            <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">TOWER / BLOCK</label>
-                            <select id="sm-tower" class="project-select" style="width: 100%;" onchange="smUpdateFloors()">
-                                <option value="">-- Select Block --</option>
-                                <option value="Tower A">Tower A (Commercial)</option>
-                                <option value="Tower B">Tower B (Residential)</option>
-                            </select>
+                        <!-- TAB NAVIGATION -->
+                        <div class="flex gap-2 mb-8 border-b border-slate-200/50 pb-4 overflow-x-auto custom-scrollbar whitespace-nowrap">
+                            <button id="tabLog" class="tsk-tab px-5 py-2.5 rounded-xl text-sm font-bold transition bg-[#1E3A5F] text-white shadow-md">Log New Task(s)</button>
+                            <button id="tabActive" class="tsk-tab px-5 py-2.5 rounded-xl text-sm font-bold transition text-slate-500 hover:bg-white/50">Active Tasks</button>
+                            <button id="tabPending" class="tsk-tab px-5 py-2.5 rounded-xl text-sm font-bold transition text-slate-500 hover:bg-white/50">Pending Units</button>
                         </div>
 
-                        <div class="input-group" style="margin-bottom: 12px;">
-                            <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">FLOOR LEVEL</label>
-                            <select id="sm-floor" class="project-select" style="width: 100%;" disabled onchange="smUpdateCategories()">
-                                <option value="">-- Select Floor --</option>
-                            </select>
+                        <!-- LOG NEW TASK SECTION -->
+                        <div id="sectionLog" class="tab-section block animate-in fade-in">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div>
+                                    <label class="block text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-2">Tower / Block</label>
+                                    <select id="taskTower" class="glass-input w-full rounded-xl px-4 py-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#F59E0B]">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-2">Floor Level</label>
+                                    <select id="taskFloor" class="glass-input w-full rounded-xl px-4 py-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#F59E0B]">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-2">Category</label>
+                                    <select id="taskCategory" class="glass-input w-full rounded-xl px-4 py-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#F59E0B]">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6 bg-blue-50/50 border border-blue-100 p-5 rounded-[1.25rem]">
+                                <label class="block text-[10px] font-extrabold text-blue-600 uppercase tracking-widest mb-2">Select Task / Checklist Point</label>
+                                <select id="taskChecklist" class="glass-input w-full rounded-xl px-4 py-3 font-bold text-blue-900 outline-none focus:ring-2 focus:ring-blue-400 bg-white">
+                                    <option value="">-- Select Category First --</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-6">
+                                <label class="block text-[10px] font-extrabold text-[#1E3A5F] uppercase tracking-widest mb-2">Applicable Sub-Categories (Units)</label>
+                                <div id="taskZones" class="glass-input rounded-xl p-4 max-h-48 overflow-y-auto custom-scrollbar bg-white/40 border border-slate-200/60">
+                                    <div class="text-sm font-bold text-slate-400 text-center p-4">Select Tower, Floor, and Category to view units.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label class="block text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-2">Assigned Agency</label>
+                                    <select id="taskAgency" class="glass-input w-full rounded-xl px-4 py-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#F59E0B]">
+                                        <option value="">-- Select Agency --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-2">CURRENT STATUS</label>
+                                    <select id="taskStatus" class="glass-input w-full rounded-xl px-4 py-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#F59E0B]">
+                                        <option value="Not Started">Not Started</option>
+                                        <option value="On-Going">On-Going</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8 pt-6 border-t border-slate-200/50 flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div id="taskStatusMsg" class="font-bold text-sm"></div>
+                                <button id="submitTaskBtn" class="w-full md:w-auto bg-[#1E3A5F] text-white px-8 py-3.5 rounded-xl font-bold shadow-lg hover:bg-[#152943] transition flex items-center justify-center gap-2">
+                                    <i data-lucide="save" class="w-5 h-5"></i> <span>Assign Task to Units</span>
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="input-group" style="margin-bottom: 15px;">
-                            <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">ZONE / CATEGORY</label>
-                            <select id="sm-category" class="project-select" style="width: 100%;" disabled onchange="smEnableChecklistBtn()">
-                                <option value="">-- Select Category --</option>
-                            </select>
-                        </div>
+                        <!-- DATA SECTIONS -->
+                        <div id="sectionActive" class="tab-section hidden animate-in fade-in"><div id="activeTasksBody" class="space-y-3"></div></div>
+                        <div id="sectionPending" class="tab-section hidden animate-in fade-in"><div id="pendingTasksBody" class="space-y-3"></div></div>
 
-                        <button id="sm-load-btn" class="login-btn" style="width: 100%; padding: 12px; font-size: 15px;" disabled onclick="smLoadChecklist()">
-                            Load Master Checklist <i class="fas fa-arrow-down" style="margin-left: 8px;"></i>
-                        </button>
-                    </div>
-
-                    <!-- Dynamic Checklist Container (Hidden until loaded) -->
-                    <div id="sm-checklist-container" style="display: none;">
-                        <h4 style="margin: 20px 0 10px 0; color: #333;">Pending Tasks</h4>
-                        <div id="sm-task-list">
-                            <!-- Tasks will generate here -->
-                        </div>
                     </div>
                 </div>
-
-                <!-- Future dynamic screens for other modules will be injected here by JS -->
-
             </div>
         </div>
 
-        <!-- EXCLUSIVE MODULE NAVIGATION (Bottom Bar Only) -->
-        <div class="bottom-nav" id="dynamicBottomNav">
-            <!-- Populated entirely by emp_dashboard.js -->
-        </div>
-
+        <div class="bottom-nav" id="dynamicBottomNav"></div>
     </div>
 
-    <!-- SCRIPTS -->
     <script src="js/emp_auth.js"></script>
     <script src="js/emp_dashboard.js"></script>
-
 </body>
 </html>
